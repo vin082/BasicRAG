@@ -76,7 +76,7 @@ def process_file(uploaded_file):
             st.error(f"Failed to load the file '{file_name}': {e}")
             return None
 
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=300)
+        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         texts = text_splitter.split_documents(documents)
 
         if os.path.exists(file_path):
@@ -99,6 +99,7 @@ if st.session_state.uploaded_files:
     with st.spinner("Processing files..."):
         new_files_processed = False
         progress_bar = st.progress(0)
+        #batch_size=5
         for i, uploaded_file in enumerate(st.session_state.uploaded_files):
             file_name = uploaded_file.name
             if file_name not in st.session_state.processed_file_names:
@@ -171,7 +172,7 @@ if st.session_state.vectorstore:
             # Check if the prompt is a basic greeting
             prompt_lower = prompt.lower().strip()
             if prompt_lower in GREETINGS:
-                response = "Hello! How can I assist you with the documents today?"
+                response = "Hello! How can I assist you today?"
                 stream_handler.on_llm_new_token(response)
                 st.session_state.messages.append({"role": "assistant", "content": response})
             else:
@@ -184,7 +185,7 @@ if st.session_state.vectorstore:
                     return_source_documents=True,
                     chain_type_kwargs={
                         "prompt": PromptTemplate(
-                            template="You are a helpful assistant. Use the following context to answer the question:\n\n{context}\n\nQuestion: {question}\nAnswer: in atleast 200 words.",
+                            template="You are a helpful assistant. Use the following context to answer the question:\n\n{context}\n\nQuestion: {question}\nAnswer:.",
                             input_variables=["context", "question"],
                         )
                     },
@@ -209,7 +210,7 @@ if st.session_state.vectorstore:
                 # Display retrieved documents with scores
                 with st.expander("Top 2 Retrieved Documents"):
                     for i, (doc, score) in enumerate(sources_with_scores, 1):
-                        st.markdown(f"**Document {i}** (from {doc.metadata.get('source', 'unknown')}, Similarity Score: {score:.4f}):")
+                        st.markdown(f"**Document {i}** (from {doc.metadata.get('source', 'unknown')}, Similarity Score(smaller is better): {score:.4f}):")
                         st.text(doc.page_content[:500] + "..." if len(doc.page_content) > 500 else doc.page_content)
 else:
     st.info("Please upload files to get started.")
