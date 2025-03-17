@@ -1,3 +1,7 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
 import os
 import time
 import streamlit as st
@@ -14,7 +18,8 @@ from langchain.callbacks.base import BaseCallbackHandler
 # Set up OpenAI API key
 from dotenv import load_dotenv
 load_dotenv()
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+#os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
+openai_api_key = st.secrets["OPENAI_API_KEY"] #for steramlit deployment
 
 # Streamlit app title and description
 st.set_page_config(page_title="RAG Chatbot Demo", page_icon="🤖", layout="wide")
