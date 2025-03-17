@@ -17,3 +17,4 @@ unstructured
 docx2txt
 rank_bm25
 markdown
+pysqlite3-binary
